@@ -1,0 +1,14 @@
+1)Python
+https://docs.python.org/3/library/stdtypes.html
+https://www.geeksforgeeks.org/python/python-string-methods/
+https://www.w3schools.com/python/python_ref_string.asp
+
+2)Typing training:
+
+https://play.typeracer.com
+
+https://harmash.com/
+
+https://harmash.com/
+
+https://www.typingclub.com/
