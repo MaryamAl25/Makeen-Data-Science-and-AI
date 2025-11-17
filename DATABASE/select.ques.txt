@@ -1,0 +1,22 @@
+1-Get all active staff who are Chefs
+2-Get all menu items that are Main Course and cost more than 4 OMR:
+3-Get all customers who are Gold OR Silver members:
+4-Get all bills where the total amount is between 10 and 30 OMR:
+5-Get staff who have positions (Chef', 'Manager') in this list
+6-Update a staff member’s 'Ahmed Al-Balushi' status to Inactive:
+7- Update menu item details 'Veggie Burger' (price= 4.100 and description = Fresh vegetarian addition to our November special menu):
+8-Show orders with customer and staff names:
+9-Show orders with customer and staff names:
+10-Show all customers, even those who have no orders:
+11-Count total number of Waiter
+12-Average salary by position
+13-Count of orders by payment method
+14-Day/Time with the highest total bill amount
+15-Which waiter has the most orders
+16-*****Which menu item was ordered the most******
+17-Number of GOLD membership customers with their info
+18-MAX and MIN total amount in bills
+19-Orders count per staff, only staff with more than 3 orders (HAVING)
+20-Menu items sorted by price ascending and descending
+21-count each menu item and sum the total quantity ordered
+

@@ -1,0 +1,213 @@
+USE MovieDB1;
+-- SELECT 
+-- JOIN -- SEPICIFC--
+SELECT ProductionCompany.COMPANYID ,ProductionCompany.NAME,MOVIE_NAME AS MOVIENAME
+FROM ProductionCompany
+INNER JOIN MOVIE ON MOVIE.COMPANYID = ProductionCompany.COMPANYID ;
+-----------------------------
+INSERT INTO MOVIE (MOVIE_NAME,YEAR_D,LENGTH,PLOTOUTLINE)
+VALUES('BBBB', 2010, 148,'secrets'),
+       ('AAAA', 1994, 154,'AAAA');
+SELECT ProductionCompany.COMPANYID ,ProductionCompany.NAME,MOVIE_NAME AS MOVIENAME
+FROM ProductionCompany
+RIGHT JOIN MOVIE ON MOVIE.COMPANYID = ProductionCompany.COMPANYID ;
+
+-- INNER JOIN Example (Many-to-Many: Movie ↔ Genre)--
+SELECT MG.GENER_ID ,MOVIE_NAME,GENER_NAME
+FROM MOVIE_GENER MG
+INNER JOIN MOVIE M ON M.MOVIE_ID = MG.MOVIE_ID 
+INNER JOIN GENER G ON G.GENER_ID = MG.GENER_ID ; 
+--------------
+-- INNER JOIN with 3 Tables (Many-to-Many: Movie ↔ Person via Movie_Person)--
+SELECT 
+    m.MOVIE_NAME AS MovieTitle,
+    p.Name AS PersonName,
+    mp.Role_Type,
+    mp.Chara_Name
+FROM Movie m
+INNER JOIN Movie_Person mp ON m.Movie_ID = mp.Movie_ID
+INNER JOIN Person p ON mp.Person_ID = p.PersonID;
+-------------------
+-- RIGHT JOIN -- ALL MOVIE THAT IN MOVIE FIEST --
+SELECT QUOTE_TEXT,NAME
+FROM QUOTE
+INNER JOIN PERSON ON PERSON.PERSONID = QUOTE.PERSON_ID ;
+-----------------------------------------
+INSERT INTO ProductionCompany (Name, Address)
+VALUES 
+('MMMMMM', 'Hollywood'),
+('NNNNN', 'bank'),
+('Universal Pictures', 'Los Angeles'),
+('Indie Films', 'Unknown Street');
+
+-- OUTER JOIN--
+SELECT ProductionCompany.COMPANYID ,ProductionCompany.NAME,MOVIE_NAME AS MOVIENAME
+FROM ProductionCompany
+LEFT JOIN MOVIE ON MOVIE.COMPANYID = ProductionCompany.COMPANYID 
+UNION
+SELECT ProductionCompany.COMPANYID ,ProductionCompany.NAME,MOVIE_NAME AS MOVIENAME
+FROM ProductionCompany
+RIGHT JOIN MOVIE ON MOVIE.COMPANYID = ProductionCompany.COMPANYID;
+--------------------------
+-- CROSS JOIN
+SELECT PC.NAME, M.MOVIE_NAME 
+FROM ProductionCompany PC
+CROSS JOIN MOVIE M;
+
+-------------------------
+-- LEFT JOIN Example (Show all movies, even without genre)--
+SELECT 
+    m.MOVIE_NAME AS MovieTitle,
+    g.Gener_Name
+FROM Movie m
+LEFT JOIN Movie_Gener mg ON m.Movie_ID = mg.Movie_ID
+LEFT JOIN Gener g ON mg.Gener_ID = g.Gener_ID;
+--------------------------
+-- RIGHT JOIN Example (Show all genres, even if no movie uses them)--
+SELECT 
+    m.MOVIE_NAME AS MovieTitle,
+    g.Gener_Name
+FROM Movie m
+RIGHT JOIN Movie_Gener mg ON m.Movie_ID = mg.Movie_ID
+RIGHT JOIN Gener g ON mg.Gener_ID = g.Gener_ID;
+
+------------------------
+-- save output of select as table
+CREATE TABLE PERSON_INO AS
+SELECT 
+    m.MOVIE_NAME AS MovieTitle,
+    p.Name AS PersonName,
+    mp.Role_Type,
+    mp.Chara_Name
+FROM Movie m
+INNER JOIN Movie_Person mp ON m.Movie_ID = mp.Movie_ID
+INNER JOIN Person p ON mp.Person_ID = p.PersonID;
+-------------------
+-- SELECT--
+SELECT * FROM PERSON;
+SELECT * FROM MOVIE;
+SELECT MOVIE_NAME,YEAR_D, LENGTH FROM MOVIE;
+SELECT * FROM MOVIE WHERE MOVIE_NAME ="Inception";
+SELECT * FROM MOVIE WHERE YEAR_D > 2000 AND LENGTH < 150;
+SELECT * FROM GENER WHERE GENER_NAME = "Crime" OR GENER_NAME = "COMEDY";
+SELECT * FROM MOVIE WHERE MOVIE_NAME LIKE '%N'; -- END WITH N
+SELECT * FROM MOVIE WHERE MOVIE_NAME LIKE 'A%'; -- START WITH A
+SELECT * FROM MOVIE WHERE YEAR_D BETWEEN 1988 AND 2025;
+
+-- UPDATE--
+UPDATE MOVIE 
+SET LENGTH = 120 , PLOTOUTLINE = "UPDATE DESCRIPTION" WHERE MOVIE_NAME = "AAAA";
+
+-- DELETE --
+DELETE FROM MOVIE WHERE MOVIE_ID = 6 ;
+DELETE FROM QUOTE; -- DELETE ALL ROWS
+
+
+SELECT AVG(Length) AS AverageLength FROM Movie;
+SELECT COUNT(*) AS TotalMovies FROM Movie;
+-------
+ALTER TABLE PERSON ADD COLUMN AGE INT;
+UPDATE PERSON
+SET AGE = TIMESTAMPDIFF(YEAR, DATEOFBIRTH, CURDATE());
+
+-----
+SELECT COMPANYID, COUNT(MOVIE_ID) AS TOTAL_MOVIE
+FROM MOVIE 
+GROUP BY COMPANYID;
+
+SELECT MOVIE_NAME , YEAR_D
+FROM MOVIE 
+ORDER BY YEAR_D ASC;
+
+SELECT COMPANYID, COUNT(MOVIE_ID) AS TOTAL_MOVIE
+FROM MOVIE 
+GROUP BY COMPANYID
+HAVING COUNT(Movie_ID) > 1
+ORDER BY Total_Movie DESC;
+
+
+SELECT 
+YEAR_D,
+COUNT(MOVIE_ID) AS TOTAL_MOVIE
+FROM MOVIE 
+GROUP BY YEAR_D;
+
+SELECT 
+    MOVIE_ID,
+    COUNT(GENER_ID) AS Total_Genres
+FROM MOVIE_GENER
+GROUP BY MOVIE_ID;
+
+SELECT 
+	C.NAME AS PRODUCTIONCOMPANY,
+    COUNT(MOVIE_ID) AS TOTAL_MOVIE
+FROM PRODUCTIONCOMPANY C
+LEFT JOIN Movie m ON m.COMPANYID = C.COMPANYID
+GROUP BY C.NAME
+ORDER BY TOTAL_MOVIE DESC;
+
+SELECT Year_D AS Release_Year,
+       AVG(Length) AS Avg_Length
+FROM Movie
+GROUP BY Year_D
+ORDER BY Avg_Length DESC;
+
+
+SELECT 
+m.MOVIE_NAME AS MOVIE_TITLE ,
+COUNT(g.GENER_ID) AS NUMBEROFGENER
+FROM MOVIE m
+INNER JOIN MOVIE_GENER mg ON m.MOVIE_ID = mg.MOVIE_ID
+INNER JOIN GENER g ON mg.GENER_ID = g.GENER_ID
+GROUP BY m.MOVIE_NAME
+HAVING COUNT(g.GENER_ID) >= 0
+ORDER BY NUMBEROFGENER DESC;
+-------------------------
+-- COUNT HOW MANY ACTOR BER MOVIE--
+SELECT m.MOVIE_NAME AS Movie_Name,
+       COUNT(mp.Person_ID) AS Total_Actors
+FROM Movie m
+INNER JOIN Movie_Person mp ON m.Movie_ID = mp.Movie_ID
+WHERE mp.ROLE_TYPE = 'Actor'         
+GROUP BY m.Movie_ID, m.MOVIE_NAME
+ORDER BY Total_Actors DESC;
+-------------------------
+-- count how many movies each dirctor has
+SELECT p.PersonID, p.Name AS Director_Name, COUNT(mp.Movie_ID) AS Total_Movies
+FROM Person p
+INNER JOIN Movie_Person mp ON p.PersonID = mp.Person_ID
+WHERE mp.ROLE_TYPE = 'Director'
+GROUP BY p.PersonID, p.Name
+ORDER BY Total_Movies DESC;
+
+-- AVG MOVIE LENGTH PER PRODUCTION COMPANY
+SELECT C.COMPANYID,NAME,
+       AVG(Length) AS Avg_Length
+FROM Movie M
+INNER JOIN PRODUCTIONCOMPANY C ON C.COMPANYID = M.COMPANYID
+GROUP BY COMPANYID
+ORDER BY Avg_Length DESC;
+
+-- COUNT HOW MANY QUOTE EACH PERSON HAVE
+SELECT QUOTE_TEXT,NAME,
+COUNT(QUOTE_ID) AS TOTAL_QUOTE
+FROM QUOTE
+LEFT JOIN PERSON ON PERSON.PERSONID = QUOTE.PERSON_ID 
+GROUP BY QUOTE_ID
+ORDER BY TOTAL_QUOTE;
+-- Same
+SELECT NAME AS PERSON_NAME,
+COUNT(QUOTE_ID) AS TOTAL_QUOTE
+FROM PERSON p
+LEFT JOIN QUOTE q ON p.PERSONID = q.PERSON_ID 
+GROUP BY p.NAME
+HAVING COUNT(QUOTE_ID) > 0
+ORDER BY TOTAL_QUOTE DESC;
+
+-- count the number of roles each person have
+SELECT NAME AS PERSON_NAME,
+COUNT(mp.ROLE_TYPE) AS TOTALRPLES
+FROM MOVIE_PERSON mp
+INNER JOIN PERSON p ON mp.PERSON_ID = p.PERSONID 
+GROUP BY p.NAME
+ORDER BY TOTALRPLES DESC;

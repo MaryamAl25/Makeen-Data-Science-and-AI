@@ -1,0 +1,80 @@
+-- 1. Create Database
+CREATE DATABASE RestaurantDB;
+USE RestaurantDB;
+
+-- 2. Create Tables
+
+-- STAFF TABLE
+CREATE TABLE Staff (
+    Staff_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(20) NOT NULL,
+    Position ENUM('Chef', 'Waiter', 'Manager') NOT NULL,
+    Salary DECIMAL(10,2) CHECK (Salary >= 0),
+    Contact_Number VARCHAR(20),
+    Email VARCHAR(30) UNIQUE,
+    Hire_Date DATE NOT NULL,
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    Gender ENUM('Male', 'Female')
+);
+
+-- CUSTOMER TABLE
+CREATE TABLE Customer (
+    Customer_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(20) NOT NULL,
+    Phone VARCHAR(20) UNIQUE,
+    Email VARCHAR(30) UNIQUE,
+    Gender ENUM('Male', 'Female'),
+    Membership_Level ENUM('Regular', 'Silver', 'Gold') DEFAULT 'Regular'
+);
+
+-- MENU_ITEM TABLE
+CREATE TABLE Menu_Item (
+    Item_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Item_Name VARCHAR(20) NOT NULL,
+    Category ENUM('Salad', 'Main Course', 'Smoothie', 'Dessert') NOT NULL,
+    Calories INT CHECK (Calories >= 0),
+    Price DECIMAL(8,2) CHECK (Price > 0),
+    Description TEXT
+);
+
+-- ORDER TABLE
+CREATE TABLE Order_r (
+    Order_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Customer_ID INT,
+    Staff_ID INT,
+    Order_Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Payment_Method ENUM('Cash', 'Card') NOT NULL,
+    Payment_Status ENUM('Paid', 'Unpaid') DEFAULT 'Unpaid',
+    Order_Status ENUM('Pending', 'Preparing', 'Ready', 'Delivered', 'Cancelled') DEFAULT 'Pending',
+    Notes TEXT,
+    CONSTRAINT fk_order_customer FOREIGN KEY (Customer_ID) REFERENCES Customer(Customer_ID)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_order_staff FOREIGN KEY (Staff_ID) REFERENCES Staff(Staff_ID)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- BILL TABLE
+CREATE TABLE Bill (
+    Bill_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Order_ID INT,
+    Bill_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Total_Amount DECIMAL(10,2) CHECK (Total_Amount >= 0),
+    CONSTRAINT fk_bill_order FOREIGN KEY (Order_ID) REFERENCES `Order`(Order_ID)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- DINE-IN TABLE
+CREATE TABLE Dine_in (
+    Table_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Number_of_Guests INT CHECK (Number_of_Guests > 0),
+    Staff_ID INT,
+    Serving_Time DATETIME,
+    Order_ID INT,
+    Bill_ID INT,
+    CONSTRAINT fk_dinein_staff FOREIGN KEY (Staff_ID) REFERENCES Staff(Staff_ID)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_dinein_order FOREIGN KEY (Order_ID) REFERENCES Order_r(Order_ID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_dinein_bill FOREIGN KEY (Bill_ID) REFERENCES Bill(Bill_ID)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
