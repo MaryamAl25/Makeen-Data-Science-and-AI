@@ -1,0 +1,3 @@
+Python is fun and easy to learn.
+Python is used for data science and web development.
+Learning Python makes programming fun.

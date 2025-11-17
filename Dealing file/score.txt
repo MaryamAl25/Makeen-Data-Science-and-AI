@@ -1,0 +1,7 @@
+Ali,78
+Sara,92
+Omar,65
+Huda,88
+Khalid,55
+Lina,95
+Mohammed,70

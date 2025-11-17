@@ -1,0 +1,3 @@
+The count is: 10
+ and The total is: 439.000000
+ The average is:43.2
